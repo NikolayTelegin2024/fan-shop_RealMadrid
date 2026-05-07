@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>🛒 Моя корзина</h1>
+
+{% if cart_items %}
+    {% for item in cart_items %}
+    <div class="cart-item">
+        <div>
+            <strong>{{ item.product.name }}</strong><br>
+            {{ item.quantity }} шт × ${{ "%.2f"|format(item.product.price) }}
+        </div>
+        <div>
+            <strong>${{ "%.2f"|format(item.quantity * item.product.price) }}</strong>
+            <a href="/remove/{{ item.id }}" style="margin-left:1rem;color:red;">❌ Удалить</a>
+        </div>
+    </div>
+    {% endfor %}
+    
+    <div style="background:white;padding:1.5rem;border-radius:8px;margin-top:1rem;">
+        <h2>Итого: ${{ "%.2f"|format(total) }}</h2>
+        <form method="POST" action="/checkout" style="margin-top:1rem;">
+            <button type="submit">💳 Оформить заказ</button>
+        </form>
+    </div>
+{% else %}
+    <p>Корзина пуста</p>
+    <a href="/" class="btn">🛍️ Перейти к покупкам</a>
+{% endif %}
+
+<a href="/" class="btn" style="margin-top:1rem;display:inline-block;">← Продолжить покупки</a>
+{% endblock %}
