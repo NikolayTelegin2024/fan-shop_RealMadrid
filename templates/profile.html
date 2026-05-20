@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>👤 Профиль: {{ user.username }}</h1>
+<h1>Профиль: {{ user.username }}</h1>
 <p>Email: {{ user.email if user.email else 'не указан' }}</p>
 <p>Дата регистрации: {{ user.id }}</p>
-<hr style="margin:2rem 0;">
-<h3>📋 Мои заказы</h3>
+<hr>
+<h3>Мои заказы</h3>
 <p>У вас пока нет заказов</p>
 {% endblock %}

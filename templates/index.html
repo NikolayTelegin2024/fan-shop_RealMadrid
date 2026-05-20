@@ -2,33 +2,40 @@
 {% block content %}
 {% if detail %}
     <h1>{{ product.name }}</h1>
-    <div class="card" style="max-width:500px;margin:0 auto;">
-        <div class="price">${{ "%.2f"|format(product.price) }}</div>
-        <p>{{ product.category }}</p>
-        {% if current_user.is_authenticated %}
-        <form method="POST" action="/add/{{ product.id }}">
-            <button type="submit">🛒 Добавить в корзину</button>
-        </form>
-        {% else %}
-        <p><a href="/login">Войдите</a> чтобы купить</p>
+    <div class="card" style="max-width:800px;margin:0 auto;display:flex;gap:20px;align-items:flex-start;">
+        {% if product.image_url %}
+            <img src="{{ product.image_url }}" alt="{{ product.name }}" style="width:200px;border:2px solid rgb(0,0,0);">
         {% endif %}
+        <div style="flex:1;">
+            <div class="price">${{ "%.2f"|format(product.price) }}</div>
+            <p>{{ product.category }}</p>
+            {% if current_user.is_authenticated %}
+            <form method="POST" action="/add/{{ product.id }}" style="padding:0;margin:10px 0;background:transparent;border:none;">
+                <button type="submit">Добавить в корзину</button>
+            </form>
+            {% else %}
+            <p><a href="/login">Войдите</a> чтобы купить</p>
+            {% endif %}
+        </div>
     </div>
-    <a href="/" class="btn" style="margin-top:1rem;">← Назад</a>
+    <a href="/" class="btn" style="margin-top:15px;">Назад</a>
 {% else %}
-    <h1>🤍 Real Madrid Fan Shop</h1>
+    <h1>Real Madrid Fan Shop</h1>
     <p>Официальная атрибутика для настоящих фанатов</p>
     <div class="grid">
         {% for p in products %}
-        <div class="card">
-            <h3>{{ p.name }}</h3>
-            <div class="price">${{ "%.2f"|format(p.price) }}</div>
-            <p>{{ p.category }}</p>
-            {% if current_user.is_authenticated %}
-            <form method="POST" action="/add/{{ p.id }}" style="display:inline;">
-                <button type="submit">🛒 В корзину</button>
-            </form>
+        <div class="card" style="display:flex;gap:15px;align-items:center;">
+            {% if p.image_url %}
+                <img src="{{ p.image_url }}" alt="{{ p.name }}" style="width:80px;height:80px;object-fit:cover;border:2px solid rgb(139,69,19);">
+            {% else %}
+                <div style="width:80px;height:80px;background:rgb(200,200,200);border:2px solid rgb(139,69,19);display:flex;align-items:center;justify-content:center;">Нет фото</div>
             {% endif %}
-            <a href="/product/{{ p.id }}">Подробнее →</a>
+            <div style="flex:1;">
+                <h3>{{ p.name }}</h3>
+                <div class="price">${{ "%.2f"|format(p.price) }}</div>
+                <p>{{ p.category }}</p>
+                <a href="/product/{{ p.id }}">Подробнее</a>
+            </div>
         </div>
         {% endfor %}
     </div>

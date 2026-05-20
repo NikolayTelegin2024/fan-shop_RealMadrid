@@ -23,6 +23,7 @@ class Product(db.Model):
     name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
     category = db.Column(db.String(50), nullable=False)
+    image_url = db.Column(db.String(300), nullable=True)
 
 class Cart(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,7 +35,7 @@ class Cart(db.Model):
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 # ============ МАРШРУТЫ ============
 @app.route('/')
@@ -43,7 +44,7 @@ def index():
 
 @app.route('/product/<int:id>')
 def product(id):
-    return render_template('index.html', product=Product.query.get_or_404(id), detail=True)
+    return render_template('index.html', product=db.session.get(Product, id), detail=True)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -103,8 +104,8 @@ def add(pid):
 @app.route('/remove/<int:cid>')
 @login_required
 def remove(cid):
-    item = Cart.query.get_or_404(cid)
-    if item.user_id == current_user.id:
+    item = db.session.get(Cart, cid)
+    if item and item.user_id == current_user.id:
         db.session.delete(item)
         db.session.commit()
         flash('Удалено')
@@ -123,22 +124,25 @@ def checkout():
 @app.route('/api/products', methods=['GET', 'POST'])
 def api_products():
     if request.method == 'GET':
-        return jsonify([{'id': p.id, 'name': p.name, 'price': p.price} for p in Product.query.all()])
+        return jsonify([{'id': p.id, 'name': p.name, 'price': p.price, 'image_url': p.image_url} for p in Product.query.all()])
     data = request.json
-    p = Product(name=data['name'], price=data['price'], category=data.get('category', 'Общее'))
+    p = Product(name=data['name'], price=data['price'], category=data.get('category', 'Общее'), image_url=data.get('image_url', ''))
     db.session.add(p)
     db.session.commit()
     return jsonify({'id': p.id}), 201
 
 @app.route('/api/products/<int:id>', methods=['GET', 'PUT', 'DELETE'])
 def api_product(id):
-    p = Product.query.get_or_404(id)
+    p = db.session.get(Product, id)
+    if not p:
+        return jsonify({'error': 'not found'}), 404
     if request.method == 'GET':
-        return jsonify({'id': p.id, 'name': p.name, 'price': p.price})
+        return jsonify({'id': p.id, 'name': p.name, 'price': p.price, 'image_url': p.image_url})
     if request.method == 'PUT':
         data = request.json
         p.name = data.get('name', p.name)
         p.price = data.get('price', p.price)
+        p.image_url = data.get('image_url', p.image_url)
         db.session.commit()
         return jsonify({'message': 'updated'})
     db.session.delete(p)
@@ -150,17 +154,17 @@ with app.app_context():
     db.create_all()
     if Product.query.count() == 0:
         products = [
-            Product(name='Домашняя форма 24/25', price=89.99, category='Формы'),
-            Product(name='Гостевая форма 24/25', price=89.99, category='Формы'),
-            Product(name='Шарф фаната', price=19.99, category='Аксессуары'),
-            Product(name='Бейсболка RM', price=24.99, category='Аксессуары'),
+            Product(name='Домашняя форма 25/26', price=89.99, category='Формы', image_url='https://dealersport.ru/wp-content/smush-webp/2025/07/форма-реал-мадрид-2025-2026.jpg.webp'),
+            Product(name='Гостевая форма 25/26', price=89.99, category='Формы', image_url='https://olimpijka.ru/files/products/07/rmawakids.600x800.png?3b20897b642c65b9da192c394d2cb747'),
+            Product(name='Шарф фаната', price=19.99, category='Аксессуары', image_url='https://dealersport.ru/wp-content/smush-webp/2020/03/81oHalwk7uL-scaled.jpeg.webp'),
+            Product(name='Бейсболка RM', price=24.99, category='Аксессуары', image_url='https://olimpijka.ru/files/products/ao-mpl.600x800.jpg?2e26c97ed8f505ba91f1c663410f0709'),
         ]
         for p in products:
             db.session.add(p)
         if not User.query.filter_by(username='fan').first():
             db.session.add(User(username='fan', password_hash=generate_password_hash('123')))
         db.session.commit()
-        print('✅ Готово! fan / 123')
+        print('Готово! fan / 123')
 
 if __name__ == '__main__':
     app.run(debug=True)
