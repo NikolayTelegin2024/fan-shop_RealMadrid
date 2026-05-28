@@ -1,16 +1,22 @@
 {% extends "base.html" %}
 {% block content %}
+
+<!-- страница товара (детальный просмотр) -->
 {% if detail %}
     <h1>{{ product.name }}</h1>
     <div class="card" style="max-width:800px;margin:0 auto;display:flex;gap:20px;align-items:flex-start;">
+        <!-- фото товара -->
         {% if product.image_url %}
             <img src="{{ product.image_url }}" alt="{{ product.name }}" style="width:200px;border:2px solid rgb(0,0,0);">
         {% endif %}
         <div style="flex:1;">
-            <div class="price">${{ "%.2f"|format(product.price) }}</div>
+            <div class="price">{{ "%.0f"|format(product.price) }} ₽</div>
             <p>{{ product.category }}</p>
+            <!-- форма добавления в корзину с выбором количества -->
             {% if current_user.is_authenticated %}
-            <form method="POST" action="/add/{{ product.id }}" style="padding:0;margin:10px 0;background:transparent;border:none;">
+            <form method="POST" action="/add/{{ product.id }}" style="padding:0;margin:10px 0;background:transparent;border:none;display:flex;gap:10px;align-items:center;">
+                <label>Количество:</label>
+                <input type="number" name="quantity" value="1" min="1" max="99" style="width:70px;margin:0;">
                 <button type="submit">Добавить в корзину</button>
             </form>
             {% else %}
@@ -19,12 +25,15 @@
         </div>
     </div>
     <a href="/" class="btn" style="margin-top:15px;">Назад</a>
+
+<!-- главная страница - список всех товаров -->
 {% else %}
     <h1>Real Madrid Fan Shop</h1>
     <p>Официальная атрибутика для настоящих фанатов</p>
     <div class="grid">
         {% for p in products %}
         <div class="card" style="display:flex;gap:15px;align-items:center;">
+            <!-- миниатюра товара -->
             {% if p.image_url %}
                 <img src="{{ p.image_url }}" alt="{{ p.name }}" style="width:80px;height:80px;object-fit:cover;border:2px solid rgb(139,69,19);">
             {% else %}
@@ -32,7 +41,7 @@
             {% endif %}
             <div style="flex:1;">
                 <h3>{{ p.name }}</h3>
-                <div class="price">${{ "%.2f"|format(p.price) }}</div>
+                <div class="price">{{ "%.0f"|format(p.price) }} ₽</div>
                 <p>{{ p.category }}</p>
                 <a href="/product/{{ p.id }}">Подробнее</a>
             </div>
@@ -40,4 +49,5 @@
         {% endfor %}
     </div>
 {% endif %}
+
 {% endblock %}

@@ -1,18 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
+
 <h1>Вход</h1>
+
+<!-- форма входа -->
 <form method="POST" action="/login">
+    {{ form.hidden_tag() if form else '' }}
     <label>Имя:</label>
     <input type="text" name="username" required>
     <label>Пароль:</label>
     <input type="password" name="password" required>
     <button type="submit">Войти</button>
 </form>
+
+<!-- форма регистрации -->
 <form method="POST" action="/register" style="margin-top:15px;">
+    {{ form.hidden_tag() if form else '' }}
     <h3>Регистрация</h3>
     <input type="text" name="username" placeholder="Имя" required>
+    <input type="email" name="email" placeholder="Email (необязательно)">
     <input type="password" name="password" placeholder="Пароль" required>
     <button type="submit">Зарегистрироваться</button>
 </form>
-<p style="text-align:center;margin-top:15px;">Тест: fan / 123</p>
+
+<!-- подсказка с тестовыми аккаунтами -->
+<p style="text-align:center;margin-top:15px;">Тест: fan / 123 | Админ: admin / admin123</p>
+
 {% endblock %}

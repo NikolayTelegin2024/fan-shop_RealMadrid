@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Админ панель</h1>
+
+<!-- кнопка добавления товара -->
+<div style="margin-bottom:20px;">
+    <a href="/admin/product/add" class="btn">Добавить товар</a>
+</div>
+
+<!-- таблица со всеми товарами -->
+<table style="width:100%;background:white;border:2px solid black;border-collapse:collapse;">
+    <tr style="background:rgb(0,0,128);color:white;">
+        <th style="border:1px solid black;padding:8px;">ID</th>
+        <th style="border:1px solid black;padding:8px;">Фото</th>
+        <th style="border:1px solid black;padding:8px;">Название</th>
+        <th style="border:1px solid black;padding:8px;">Цена</th>
+        <th style="border:1px solid black;padding:8px;">Категория</th>
+        <th style="border:1px solid black;padding:8px;">Действия</th>
+    </tr>
+    {% for p in products %}
+    <tr>
+        <td style="border:1px solid black;padding:8px;">{{ p.id }}</td>
+        <td style="border:1px solid black;padding:8px;">
+            {% if p.image_url %}
+                <img src="{{ p.image_url }}" style="width:50px;height:50px;object-fit:cover;border:1px solid black;">
+            {% endif %}
+        </td>
+        <td style="border:1px solid black;padding:8px;">{{ p.name }}</td>
+        <td style="border:1px solid black;padding:8px;">{{ "%.0f"|format(p.price) }} ₽</td>
+        <td style="border:1px solid black;padding:8px;">{{ p.category }}</td>
+        <td style="border:1px solid black;padding:8px;">
+            <a href="/admin/product/edit/{{ p.id }}" class="btn">Edit</a>
+            <form method="POST" action="/admin/product/delete/{{ p.id }}" style="display:inline;padding:0;border:none;background:none;">
+                <button type="submit" onclick="return confirm('Удалить?')">Delete</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a href="/" class="btn" style="margin-top:20px;">На главную</a>
+
+{% endblock %}

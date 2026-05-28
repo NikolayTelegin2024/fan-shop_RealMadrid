@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>{{ title }}</h1>
+
+<!-- форма добавления/редактирования товара -->
+<form method="POST">
+    {{ form.hidden_tag() }}
+    
+    <label>{{ form.name.label }}</label>
+    {{ form.name() }}
+    {% for error in form.name.errors %}
+        <div class="alert" style="background:#ffcccc;">{{ error }}</div>
+    {% endfor %}
+    
+    <label>{{ form.price.label }}</label>
+    {{ form.price() }}
+    {% for error in form.price.errors %}
+        <div class="alert" style="background:#ffcccc;">{{ error }}</div>
+    {% endfor %}
+    
+    <label>{{ form.category.label }}</label>
+    {{ form.category() }}
+    
+    <label>{{ form.image_url.label }}</label>
+    {{ form.image_url() }}
+    
+    <button type="submit">Сохранить</button>
+    <a href="/admin" class="btn">Отмена</a>
+</form>
+
+{% endblock %}

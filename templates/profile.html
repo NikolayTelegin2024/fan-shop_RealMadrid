@@ -1,9 +1,48 @@
 {% extends "base.html" %}
 {% block content %}
+
 <h1>Профиль: {{ user.username }}</h1>
+
+<!-- информация о пользователе -->
 <p>Email: {{ user.email if user.email else 'не указан' }}</p>
-<p>Дата регистрации: {{ user.id }}</p>
+<p>Дата регистрации: {{ user.created_at.strftime('%d.%m.%Y %H:%M') if user.created_at else 'не указана' }}</p>
+
 <hr>
 <h3>Мои заказы</h3>
-<p>У вас пока нет заказов</p>
+
+<!-- список заказов -->
+{% if orders %}
+    {% for order in orders %}
+    <div class="cart-item" style="flex-direction:column;align-items:stretch;">
+        <!-- заголовок заказа -->
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+            <strong>Заказ №{{ order.id }}</strong>
+            <span>{{ order.order_date.strftime('%d.%m.%Y %H:%M') }}</span>
+        </div>
+        <!-- товары в заказе -->
+        <div style="margin-bottom:10px;">
+            {% for item in order.items %}
+            <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #ccc;">
+                <span>{{ item.product_name }} x {{ item.quantity }} шт</span>
+                <span>{{ "%.0f"|format(item.product_price * item.quantity) }} ₽</span>
+            </div>
+            {% endfor %}
+        </div>
+        <!-- дата доставки и итог -->
+        <div style="display:flex;justify-content:space-between;">
+            <span>Доставка: <strong>{{ order.delivery_date.strftime('%d.%m.%Y') }}</strong></span>
+            <span>Итого: <strong>{{ "%.0f"|format(order.total_price) }} ₽</strong></span>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+    <p>У вас пока нет заказов</p>
+{% endif %}
+
+<!-- ссылка на админку для администратора -->
+{% if user.is_admin %}
+<hr>
+<a href="/admin" class="btn">Админ панель</a>
+{% endif %}
+
 {% endblock %}

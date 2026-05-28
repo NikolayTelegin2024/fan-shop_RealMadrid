@@ -1,34 +1,37 @@
 {% extends "base.html" %}
 {% block content %}
+
 <h1>Моя корзина</h1>
 
+<!-- если в корзине есть товары -->
 {% if cart_items %}
     {% for item in cart_items %}
-    <div class="cart-item" style="display:flex;gap:15px;align-items:center;">
-        {% if item.product.image_url %}
-            <img src="{{ item.product.image_url }}" alt="{{ item.product.name }}" style="width:50px;height:50px;object-fit:cover;border:2px solid rgb(0,0,0);">
-        {% endif %}
-        <div style="flex:1;">
+    <div class="cart-item">
+        <div>
             <strong>{{ item.product.name }}</strong><br>
-            {{ item.quantity }} шт x ${{ "%.2f"|format(item.product.price) }}
+            {{ item.quantity }} шт x {{ "%.0f"|format(item.product.price) }} ₽
         </div>
         <div>
-            <strong>${{ "%.2f"|format(item.quantity * item.product.price) }}</strong>
+            <strong>{{ "%.0f"|format(item.quantity * item.product.price) }} ₽</strong>
             <a href="/remove/{{ item.id }}" style="margin-left:15px;color:rgb(255,0,0);">Удалить</a>
         </div>
     </div>
     {% endfor %}
     
+    <!-- блок с итогом и оформлением -->
     <div style="background:rgb(255,255,255);padding:15px;border:3px solid rgb(0,0,0);margin-top:15px;">
-        <h2>Итого: ${{ "%.2f"|format(total) }}</h2>
+        <h2>Итого: {{ "%.0f"|format(total) }} ₽</h2>
         <form method="POST" action="/checkout" style="padding:0;margin-top:10px;background:transparent;border:none;">
             <button type="submit">Оформить заказ</button>
         </form>
     </div>
+
+<!-- если корзина пуста -->
 {% else %}
     <p>Корзина пуста</p>
     <a href="/" class="btn">Перейти к покупкам</a>
 {% endif %}
 
 <a href="/" class="btn" style="margin-top:15px;display:inline-block;">Назад</a>
+
 {% endblock %}
